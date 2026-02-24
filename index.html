@@ -1,208 +1,268 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cotizador de Seguro | Grupo Tecniseguros</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualización de Datos</title>
     <style>
-      :root {
-        --bg: #f4f7fb;
-        --card: #ffffff;
-        --text: #1d2735;
-        --muted: #5f6b7a;
-        --brand: #0f62fe;
-        --border: #d8dee9;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        font-family: "Segoe UI", Roboto, Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
-
-      .container {
-        max-width: 920px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 12px rgba(10, 25, 41, 0.06);
-      }
-
-      h1 {
-        margin: 0 0 0.4rem;
-        font-size: 1.6rem;
-      }
-
-      p.description {
-        margin: 0 0 1.3rem;
-        color: var(--muted);
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-      }
-
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-
-      label {
-        font-weight: 600;
-        font-size: 0.95rem;
-      }
-
-      input,
-      select {
-        width: 100%;
-        padding: 0.65rem 0.75rem;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 0.95rem;
-      }
-
-      .radio-group {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .radio-group label {
-        font-weight: 500;
-      }
-
-      .actions {
-        margin-top: 1.2rem;
-      }
-
-      button {
-        background: var(--brand);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 0.7rem 1.2rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      footer {
-        margin-top: 1rem;
-        font-size: 0.85rem;
-        color: var(--muted);
-        line-height: 1.45;
-      }
+        :root {
+            --primary-color: #003366; /* Azul corporativo */
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-container {
+            background-color: #ffffff;
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .header img {
+            max-height: 80px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+        .header h2 {
+            color: var(--primary-color);
+            margin-top: 15px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="email"], input[type="date"], input[type="tel"], select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        .btn-submit {
+            grid-column: span 2;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #002244;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        
+        /* Diseño adaptable a celulares */
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width, .btn-submit {
+                grid-column: span 1;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <main class="container">
-      <section class="card">
-        <h1>Datos generales y de contacto</h1>
-        <p class="description">Completa el siguiente formulario para iniciar tu cotización de seguro.</p>
+</head>
+<body>
 
-        <form>
-          <div class="grid">
-            <div class="field">
-              <label for="documento">DPI</label>
-              <select id="documento" name="documento" required>
-                <option value="" selected disabled>Selecciona una opción</option>
-                <option value="dpi">DPI/Pasaporte</option>
-                <option value="pasaporte">DPI/Pasaporte</option>
-              </select>
+    <div class="form-container">
+        <div class="header">
+            <img id="logo-empresa" src="https://via.placeholder.com/200x80?text=Logo+Por+Defecto" alt="Logo de la Empresa">
+            <h2>Datos Generales y de Contacto</h2>
+        </div>
+
+        <form id="datosForm">
+            <div class="form-grid">
+                
+                <div class="form-group">
+                    <label for="tipoDocumento">Tipo de Documento</label>
+                    <select id="tipoDocumento" name="tipoDocumento" required>
+                        <option value="" disabled selected>Selecciona una opción</option>
+                        <option value="DPI">DPI</option>
+                        <option value="Pasaporte">Pasaporte</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="numeroDocumento">Número de DPI/Pasaporte</label>
+                    <input type="text" id="numeroDocumento" name="numeroDocumento" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="primerNombre">Primer Nombre</label>
+                    <input type="text" id="primerNombre" name="primerNombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="segundoNombre">Segundo Nombre</label>
+                    <input type="text" id="segundoNombre" name="segundoNombre">
+                </div>
+
+                <div class="form-group">
+                    <label for="primerApellido">Primer Apellido</label>
+                    <input type="text" id="primerApellido" name="primerApellido" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="segundoApellido">Segundo Apellido</label>
+                    <input type="text" id="segundoApellido" name="segundoApellido">
+                </div>
+
+                <div class="form-group">
+                    <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                    <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Género</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="genero" value="Masculino" required> Masculino</label>
+                        <label><input type="radio" name="genero" value="Femenino"> Femenino</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="departamento">Departamento</label>
+                    <input type="text" id="departamento" name="departamento" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="municipio">Municipio</label>
+                    <input type="text" id="municipio" name="municipio" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="zona">Zona</label>
+                    <input type="text" id="zona" name="zona" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="correo">Correo Electrónico</label>
+                    <input type="email" id="correo" name="correo" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="ocupacion">Ocupación</label>
+                    <input type="text" id="ocupacion" name="ocupacion" required>
+                </div>
+
+                <button type="button" class="btn-submit" onclick="enviarDatos()">Enviar Datos</button>
             </div>
-
-            <div class="field">
-              <label for="primerNombre">Primer Nombre</label>
-              <input id="primerNombre" name="primerNombre" type="text" placeholder="Primer Nombre" required />
-            </div>
-
-            <div class="field">
-              <label for="segundoNombre">Segundo Nombre</label>
-              <input id="segundoNombre" name="segundoNombre" type="text" placeholder="Segundo Nombre" />
-            </div>
-
-            <div class="field">
-              <label for="primerApellido">Primer Apellido</label>
-              <input id="primerApellido" name="primerApellido" type="text" placeholder="Primer Apellido" required />
-            </div>
-
-            <div class="field">
-              <label for="segundoApellido">Segundo Apellido</label>
-              <input id="segundoApellido" name="segundoApellido" type="text" placeholder="Segundo Apellido" />
-            </div>
-
-            <div class="field">
-              <label for="fechaNacimiento">Fecha de Nacimiento</label>
-              <input id="fechaNacimiento" name="fechaNacimiento" type="date" required />
-            </div>
-
-            <div class="field">
-              <label>Género:</label>
-              <div class="radio-group">
-                <label><input type="radio" name="genero" value="masculino" required /> Masculino</label>
-                <label><input type="radio" name="genero" value="femenino" /> Femenino</label>
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="departamento">Departamento</label>
-              <input id="departamento" name="departamento" type="text" placeholder="Departamento" required />
-            </div>
-
-            <div class="field">
-              <label for="municipio">Municipio</label>
-              <input id="municipio" name="municipio" type="text" placeholder="Municipio" required />
-            </div>
-
-            <div class="field">
-              <label for="zona">Zona</label>
-              <input id="zona" name="zona" type="text" placeholder="Zona" required />
-            </div>
-
-            <div class="field">
-              <label for="telefono">Teléfono</label>
-              <input id="telefono" name="telefono" type="tel" placeholder="Teléfono" required />
-            </div>
-
-            <div class="field">
-              <label for="correo">Correo Electrónico</label>
-              <input id="correo" name="correo" type="email" placeholder="Correo Electrónico" required />
-            </div>
-
-            <div class="field">
-              <label for="ocupacion">Ocupación</label>
-              <input id="ocupacion" name="ocupacion" type="text" placeholder="Ocupación" required />
-            </div>
-          </div>
-
-          <div class="actions">
-            <button type="submit">Continuar</button>
-          </div>
         </form>
+    </div>
 
-        <footer>
-          <p><strong>Todos los derechos reservados® Grupo Tecniseguros 2026</strong></p>
-          <p>
-            Los datos personales y contenido de este formulario han sido facilitados por usted y su
-            consentimiento por lo que son estrictamente confidenciales, secretos y restringidos. Esta
-            información será utilizada para el uso interno y mejora de la asesoría de Grupo Tecniseguros.
-          </p>
-        </footer>
-      </section>
-    </main>
-  </body>
+    <div class="footer">
+        <p>Todos los derechos reservados® Grupo Tecniseguros 2026</p>
+        <p>Los datos personales y contenido de este formulario han sido facilitados por usted y su consentimiento por lo que son estrictamente confidenciales, secretos y restringidos. Esta información será utilizada para el uso interno y mejora de la asesoría de Grupo Tecniseguros.</p>
+    </div>
+
+    <script>
+        // --- 1. LÓGICA PARA CAMBIAR EL LOGO DINÁMICAMENTE ---
+        // Aquí defines qué URL de imagen corresponde a cada empresa
+        const logosEmpresas = {
+            "empresa1": "https://url-de-tu-imagen.com/logo-empresa1.png",
+            "empresa2": "https://url-de-tu-imagen.com/logo-empresa2.png",
+            "empresa3": "https://url-de-tu-imagen.com/logo-empresa3.png",
+            "empresa4": "https://url-de-tu-imagen.com/logo-empresa4.png",
+            "empresa5": "https://url-de-tu-imagen.com/logo-empresa5.png",
+            "empresa6": "https://url-de-tu-imagen.com/logo-empresa6.png"
+        };
+
+        // Leer el parámetro de la URL (ejemplo: tusitio.netlify.app/?empresa=empresa1)
+        const urlParams = new URLSearchParams(window.location.search);
+        const empresa = urlParams.get('empresa');
+        
+        // Si hay una empresa en la URL y existe en nuestra lista, cambiamos el logo
+        if (empresa && logosEmpresas[empresa]) {
+            document.getElementById('logo-empresa').src = logosEmpresas[empresa];
+        }
+
+        // --- 2. LÓGICA PARA ENVIAR DATOS A POWER AUTOMATE ---
+        function enviarDatos() {
+            // Reemplaza esta URL con la que te genere Power Automate
+            const urlPowerAutomate = "AQUI_PONDREMOS_LA_URL_DE_POWER_AUTOMATE";
+            
+            // Recopilamos todos los datos del formulario
+            const formElement = document.getElementById('datosForm');
+            const formData = new FormData(formElement);
+            const datosJSON = Object.fromEntries(formData.entries());
+
+            // Agregamos la empresa a los datos para saber de dónde vienen
+            datosJSON.empresaOrigen = empresa || "Desconocida";
+
+            // Validar que los campos requeridos estén llenos antes de enviar
+            if(!formElement.checkValidity()) {
+                formElement.reportValidity();
+                return;
+            }
+
+            // Muestra mensaje de carga en el botón
+            const btn = document.querySelector('.btn-submit');
+            btn.innerText = "Enviando...";
+            btn.disabled = true;
+
+            // Aquí haremos la conexión HTTP a tu flujo (Webhook)
+            console.log("Datos listos para enviar:", datosJSON);
+            alert("El formulario está listo visualmente. Falta conectar la URL de Power Automate.");
+            
+            // Cuando tengamos la URL de Power Automate, usaremos el código fetch() aquí.
+            btn.innerText = "Enviar Datos";
+            btn.disabled = false;
+        }
+    </script>
+</body>
 </html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cotizador de Seguro | Grupo Tecniseguros</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --card: #ffffff;
+        --text: #1d2735;
+        --muted: #5f6b7a;
+        --brand: #0f62fe;
+        --border: #d8dee9;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 920px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(10, 25, 41, 0.06);
+      }
+
+      .brand {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      .brand img {
+        max-width: 100%;
+        width: 360px;
+        height: auto;
+      }
+
+      h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.6rem;
+      }
+
+      p.description {
+        margin: 0 0 1.3rem;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .radio-group label {
+        font-weight: 500;
+      }
+
+      .actions {
+        margin-top: 1.2rem;
+      }
+
+      button {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      footer {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <div class="brand">
+          <img
+            src="https://cdn.mcauto-images-production.sendgrid.net/18166728954b7171/2f32c1d4-0e2f-47c2-b537-74566b1625b5/1755x384.png"
+            alt="Logo Grupo Tecniseguros"
+          />
+        </div>
+        <h1>Datos generales y de contacto</h1>
+        <p class="description">Completa el siguiente formulario para iniciar tu cotización de seguro.</p>
+
+        <form>
+          <div class="grid">
+            <div class="field">
+              <label for="documento">DPI</label>
+              <select id="documento" name="documento" required>
+                <option value="" selected disabled>Selecciona una opción</option>
+                <option value="dpi">DPI/Pasaporte</option>
+                <option value="pasaporte">DPI/Pasaporte</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="primerNombre">Primer Nombre</label>
+              <input id="primerNombre" name="primerNombre" type="text" placeholder="Primer Nombre" required />
+            </div>
+
+            <div class="field">
+              <label for="segundoNombre">Segundo Nombre</label>
+              <input id="segundoNombre" name="segundoNombre" type="text" placeholder="Segundo Nombre" />
+            </div>
+
+            <div class="field">
+              <label for="primerApellido">Primer Apellido</label>
+              <input id="primerApellido" name="primerApellido" type="text" placeholder="Primer Apellido" required />
+            </div>
+
+            <div class="field">
+              <label for="segundoApellido">Segundo Apellido</label>
+              <input id="segundoApellido" name="segundoApellido" type="text" placeholder="Segundo Apellido" />
+            </div>
+
+            <div class="field">
+              <label for="fechaNacimiento">Fecha de Nacimiento</label>
+              <input id="fechaNacimiento" name="fechaNacimiento" type="date" required />
+            </div>
+
+            <div class="field">
+              <label>Género:</label>
+              <div class="radio-group">
+                <label><input type="radio" name="genero" value="masculino" required /> Masculino</label>
+                <label><input type="radio" name="genero" value="femenino" /> Femenino</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="departamento">Departamento</label>
+              <input id="departamento" name="departamento" type="text" placeholder="Departamento" required />
+            </div>
+
+            <div class="field">
+              <label for="municipio">Municipio</label>
+              <input id="municipio" name="municipio" type="text" placeholder="Municipio" required />
+            </div>
+
+            <div class="field">
+              <label for="zona">Zona</label>
+              <input id="zona" name="zona" type="text" placeholder="Zona" required />
+            </div>
+
+            <div class="field">
+              <label for="telefono">Teléfono</label>
+              <input id="telefono" name="telefono" type="tel" placeholder="Teléfono" required />
+            </div>
+
+            <div class="field">
+              <label for="correo">Correo Electrónico</label>
+              <input id="correo" name="correo" type="email" placeholder="Correo Electrónico" required />
+            </div>
+
+            <div class="field">
+              <label for="ocupacion">Ocupación</label>
+              <input id="ocupacion" name="ocupacion" type="text" placeholder="Ocupación" required />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit">Continuar</button>
+          </div>
+        </form>
+
+        <footer>
+          <p><strong>Todos los derechos reservados® Grupo Tecniseguros 2026</strong></p>
+          <p>
+            Los datos personales y contenido de este formulario han sido facilitados por usted y su
+            consentimiento por lo que son estrictamente confidenciales, secretos y restringidos. Esta
+            información será utilizada para el uso interno y mejora de la asesoría de Grupo Tecniseguros.
+          </p>
+        </footer>
+      </section>
+    </main>
+  </body>
+</html>

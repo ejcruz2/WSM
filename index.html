@@ -81,6 +81,16 @@
         transition: transform 0.15s ease, background 0.15s ease;
       }
       .option-card:hover { transform: translateY(-2px); background: var(--brand-soft); }
+      .option-card.selected {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+        box-shadow: 0 8px 20px rgba(20, 45, 104, 0.26);
+      }
+      .option-card.selected .icon {
+        border-color: #fff;
+        color: #fff;
+      }
       .icon {
         width: 88px; height: 88px; border: 3px solid var(--brand); border-radius: 18px;
         display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 700;
@@ -311,14 +321,11 @@
             </div>
             <div data-family-extra style="display:none">
               <div class="field"><label>Fecha de nacimiento del cónyuge</label><input name="fechaNacimientoConyuge" type="date" /></div>
-              <div class="field"><label>Cantidad de Hijos</label><input name="cantidadHijos" type="number" min="0" max="10" /></div>
+              <div class="field"><label>Cantidad de Hijos</label><input name="cantidadHijos" type="number" min="0" max="5" /></div>
               <div class="field">
                 <label>Dependientes (edad, máximo 5)</label>
-                <div class="inline-row">
-                  <div class="dependent-list" data-dependent-list></div>
-                  <button type="button" class="pill-btn" data-add-dependent>+ agregar</button>
-                </div>
-                <p class="note">Para ${product} familiar puedes registrar hasta 5 dependientes.</p>
+                <div class="dependent-list" data-dependent-list></div>
+                <p class="note">Se crearán automáticamente los campos según la cantidad de hijos.</p>
               </div>
             </div>
             <div><button type="submit" class="pill-btn">Aceptar</button></div>
@@ -370,14 +377,70 @@
       function extractModalData(modalForm) {
         const data = {};
         modalForm.querySelectorAll("input, select, textarea").forEach((el) => {
+          if (el.name === "dependienteEdad[]") return;
+
           if (el.type === "checkbox") {
             data[el.name] = el.checked;
           } else if (el.name) {
             data[el.name] = el.value;
           }
         });
-        data.dependientes = Array.from(modalForm.querySelectorAll('input[name="dependienteEdad[]"]')).map((i) => i.value).filter(Boolean);
+
+        data.dependientes = Array.from(modalForm.querySelectorAll('input[name="dependienteEdad[]"]'))
+          .map((i) => i.value)
+          .filter((value) => value !== "");
+
         return data;
+      }
+
+      function updateProductSelectionState(product) {
+        const card = document.querySelector(`[data-product="${product}"]`);
+        if (!card) return;
+
+        if (productDetails[product]) {
+          selectedProducts.add(product);
+          card.classList.add("selected");
+        } else {
+          selectedProducts.delete(product);
+          card.classList.remove("selected");
+        }
+      }
+
+      function setFormValues(modalForm, savedData = {}) {
+        modalForm.querySelectorAll("input, select, textarea").forEach((el) => {
+          if (!el.name || el.name === "dependienteEdad[]") return;
+
+          const value = savedData[el.name];
+          if (value === undefined) return;
+
+          if (el.type === "checkbox") {
+            el.checked = Boolean(value);
+          } else {
+            el.value = value;
+          }
+        });
+      }
+
+      function syncDependentFields(modalForm, presetDependents) {
+        const dependentsContainer = modalForm.querySelector("[data-dependent-list]");
+        const cantidadInput = modalForm.querySelector('input[name="cantidadHijos"]');
+        if (!dependentsContainer || !cantidadInput) return;
+
+        const sourceDependents = Array.isArray(presetDependents)
+          ? presetDependents
+          : Array.from(modalForm.querySelectorAll('input[name="dependienteEdad[]"]')).map((el) => el.value);
+
+        const requestedDependents = Math.max(0, Math.min(5, Number(cantidadInput.value) || 0));
+        dependentsContainer.innerHTML = "";
+
+        for (let index = 0; index < requestedDependents; index += 1) {
+          const row = document.createElement("div");
+          row.className = "field";
+          row.innerHTML = `<label>Edad dependiente ${index + 1}</label><input name="dependienteEdad[]" type="number" min="0" max="120" placeholder="Edad" />`;
+          const input = row.querySelector('input[name="dependienteEdad[]"]');
+          if (input) input.value = sourceDependents[index] || "";
+          dependentsContainer.appendChild(row);
+        }
       }
 
       function openProductModal(product) {
@@ -386,42 +449,48 @@
         modalBackdrop.classList.add("open");
         modalBackdrop.setAttribute("aria-hidden", "false");
 
-        const familyToggle = modalBody.querySelector("[data-family-toggle]");
-        const familyExtra = modalBody.querySelector("[data-family-extra]");
-        const addDependentBtn = modalBody.querySelector("[data-add-dependent]");
-        const dependentList = modalBody.querySelector("[data-dependent-list]");
+        const modalForm = modalBody.querySelector("[data-modal-form]");
+        if (!modalForm) return;
+
+        const savedData = productDetails[product] || {};
+        setFormValues(modalForm, savedData);
+
+        const familyToggle = modalForm.querySelector("[data-family-toggle]");
+        const familyExtra = modalForm.querySelector("[data-family-extra]");
+        const cantidadHijosInput = modalForm.querySelector('input[name="cantidadHijos"]');
 
         if (familyToggle && familyExtra) {
-          familyToggle.addEventListener("change", () => {
-            familyExtra.style.display = familyToggle.value === "familiar" ? "block" : "none";
-          });
-        }
-
-        if (addDependentBtn && dependentList) {
-          addDependentBtn.addEventListener("click", () => {
-            const count = dependentList.querySelectorAll('input[name="dependienteEdad[]"]').length;
-            if (count >= 5) {
-              alert("Solo se permiten hasta 5 dependientes.");
-              return;
+          const updateFamilyVisibility = () => {
+            const isFamiliar = familyToggle.value === "familiar";
+            familyExtra.style.display = isFamiliar ? "block" : "none";
+            if (!isFamiliar) {
+              syncDependentFields(modalForm, []);
+            } else {
+              syncDependentFields(modalForm, savedData.dependientes || []);
             }
-            const row = document.createElement("div");
-            row.className = "field";
-            row.innerHTML = `<label>Edad dependiente ${count + 1}</label><input name="dependienteEdad[]" type="number" min="0" max="120" placeholder="Edad" />`;
-            dependentList.appendChild(row);
-          });
+          };
+
+          familyToggle.addEventListener("change", updateFamilyVisibility);
+          updateFamilyVisibility();
         }
 
-        const modalForm = modalBody.querySelector("[data-modal-form]");
-        if (modalForm) {
-          modalForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            selectedProducts.add(product);
-            productDetails[product] = extractModalData(modalForm);
-            document.querySelector(`[data-product="${product}"]`)?.classList.add("selected");
-            closeModal();
-            alert(`Información de ${product} guardada.`);
+        if (cantidadHijosInput) {
+          cantidadHijosInput.addEventListener("input", () => {
+            syncDependentFields(modalForm);
           });
+
+          if (familyToggle?.value === "familiar") {
+            syncDependentFields(modalForm, savedData.dependientes || []);
+          }
         }
+
+        modalForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          productDetails[product] = extractModalData(modalForm);
+          updateProductSelectionState(product);
+          closeModal();
+          alert(`Información de ${product} guardada.`);
+        });
       }
 
       function closeModal() {

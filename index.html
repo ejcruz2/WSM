@@ -142,9 +142,24 @@
       .dependent-list { display: grid; gap: 0.45rem; }
       .pill-btn { border-radius: 999px; border: none; background: var(--brand); color: #fff; padding: 0.65rem 1rem; font-weight: 700; cursor: pointer; }
       .note { font-size: 0.83rem; color: #6b7c93; }
-      .json-result { margin-top: 1rem; padding: 1rem; border: 1px solid #d6e0f1; border-radius: 12px; background: #f7faff; display: none; }
-      .json-result h3 { margin: 0 0 0.5rem; color: var(--brand); }
-      .json-result pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; background: #fff; border: 1px solid #dfe7f5; border-radius: 10px; padding: 0.75rem; max-height: 320px; overflow: auto; }
+
+      .result-popup {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 80;
+        width: min(480px, calc(100% - 2rem));
+        background: #ffffff;
+        border: 1px solid #d6e0f1;
+        border-left: 6px solid var(--brand);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(15, 33, 60, 0.2);
+        padding: 0.9rem 0.95rem;
+        display: none;
+      }
+      .result-popup.show { display: block; }
+      .result-popup h4 { margin: 0 0 0.35rem; color: var(--brand); }
+      .result-popup p { margin: 0; font-size: 0.92rem; color: #243b58; white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; }
 
       footer {
         margin-top: 1.3rem; font-size: 0.9rem; color: var(--muted); line-height: 1.55;
@@ -165,7 +180,7 @@
       <section class="card">
         <div class="brand">
           <img
-            src="https://cdn.mcauto-images-production.sendgrid.net/18166728954b7171/2f32c1d4-0e2f-47c2-b537-74566b1625b5/1755x384.png"
+            src="http://cdn.mcauto-images-production.sendgrid.net/18166728954b7171/4f82cc48-b83d-4684-82b2-2b4a4317e687/500x222.png"
             alt="Logo Grupo Tecniseguros"
           />
         </div>
@@ -227,11 +242,6 @@
           <p><strong>Todos los derechos reservados® Grupo Tecniseguros 2026</strong></p>
           <p>Los datos personales y contenido de este formulario han sido facilitados por usted y su consentimiento por lo que son estrictamente confidenciales, secretos y restringidos. Esta información será utilizada para el uso interno y mejora de la asesoría de Grupo Tecniseguros.</p>
         </footer>
-
-        <div id="jsonResult" class="json-result" aria-live="polite">
-          <h3>JSON generado</h3>
-          <pre id="jsonOutput"></pre>
-        </div>
       </section>
     </main>
 
@@ -245,6 +255,11 @@
       </div>
     </div>
 
+    <div id="resultPopup" class="result-popup" role="alert" aria-live="assertive">
+      <h4 id="resultPopupTitle">Resultado</h4>
+      <p id="resultPopupMessage"></p>
+    </div>
+
     <script>
       const step1 = document.getElementById("step1");
       const step3 = document.getElementById("step3");
@@ -252,11 +267,13 @@
       const modalBackdrop = document.getElementById("modalBackdrop");
       const modalBody = document.getElementById("modalBody");
       const modalTitleText = document.querySelector("#modalTitle span");
-      const jsonResult = document.getElementById("jsonResult");
-      const jsonOutput = document.getElementById("jsonOutput");
+      const resultPopup = document.getElementById("resultPopup");
+      const resultPopupTitle = document.getElementById("resultPopupTitle");
+      const resultPopupMessage = document.getElementById("resultPopupMessage");
 
       const productDetails = {};
       const selectedProducts = new Set();
+      const POST_URL = "https://default28c7f1d30d9b4a84bb9871e6b7435e.ca.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1cb71870c9664f1d8b8d9f6793a590b6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Zzlb3DoCbIBV_h-sxzBG8ZNl_icoK8azO7UTodgj6eA";
 
       const defaultProductSchema = {
         "Salud": { tipoCotizacion: "", maternidad: false, enfermedadesGraves: false, fechaNacimientoConyuge: "", cantidadHijos: "", dependientes: [] },
@@ -431,6 +448,13 @@
         };
       }
 
+      function showResultPopup(title, message) {
+        resultPopupTitle.textContent = title;
+        resultPopupMessage.textContent = message;
+        resultPopup.classList.add("show");
+        setTimeout(() => resultPopup.classList.remove("show"), 9000);
+      }
+
       function buildFinalJson() {
         const seguros = {};
         Object.keys(defaultProductSchema).forEach((product) => {
@@ -463,11 +487,31 @@
         card.addEventListener("click", () => openProductModal(card.dataset.product));
       });
 
-      document.getElementById("finishBtn").addEventListener("click", () => {
+      document.getElementById("finishBtn").addEventListener("click", async () => {
         const payload = buildFinalJson();
-        jsonOutput.textContent = JSON.stringify(payload, null, 2);
-        jsonResult.style.display = "block";
-        jsonResult.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        try {
+          const response = await fetch(POST_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const rawText = await response.text();
+          let parsed = rawText;
+          try {
+            parsed = rawText ? JSON.stringify(JSON.parse(rawText), null, 2) : "Sin contenido en la respuesta.";
+          } catch (_) {}
+
+          if (!response.ok) {
+            showResultPopup("Error al enviar JSON", `HTTP ${response.status}: ${parsed}`);
+            return;
+          }
+
+          showResultPopup("JSON enviado correctamente", parsed || "Solicitud enviada con éxito.");
+        } catch (error) {
+          showResultPopup("Error de red al enviar JSON", error?.message || "No se pudo conectar al endpoint.");
+        }
       });
 
       document.getElementById("modalClose").addEventListener("click", closeModal);

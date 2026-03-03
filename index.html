@@ -142,6 +142,9 @@
       .dependent-list { display: grid; gap: 0.45rem; }
       .pill-btn { border-radius: 999px; border: none; background: var(--brand); color: #fff; padding: 0.65rem 1rem; font-weight: 700; cursor: pointer; }
       .note { font-size: 0.83rem; color: #6b7c93; }
+      .json-result { margin-top: 1rem; padding: 1rem; border: 1px solid #d6e0f1; border-radius: 12px; background: #f7faff; display: none; }
+      .json-result h3 { margin: 0 0 0.5rem; color: var(--brand); }
+      .json-result pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; background: #fff; border: 1px solid #dfe7f5; border-radius: 10px; padding: 0.75rem; max-height: 320px; overflow: auto; }
 
       footer {
         margin-top: 1.3rem; font-size: 0.9rem; color: var(--muted); line-height: 1.55;
@@ -224,6 +227,11 @@
           <p><strong>Todos los derechos reservados® Grupo Tecniseguros 2026</strong></p>
           <p>Los datos personales y contenido de este formulario han sido facilitados por usted y su consentimiento por lo que son estrictamente confidenciales, secretos y restringidos. Esta información será utilizada para el uso interno y mejora de la asesoría de Grupo Tecniseguros.</p>
         </footer>
+
+        <div id="jsonResult" class="json-result" aria-live="polite">
+          <h3>JSON generado</h3>
+          <pre id="jsonOutput"></pre>
+        </div>
       </section>
     </main>
 
@@ -244,6 +252,21 @@
       const modalBackdrop = document.getElementById("modalBackdrop");
       const modalBody = document.getElementById("modalBody");
       const modalTitleText = document.querySelector("#modalTitle span");
+      const jsonResult = document.getElementById("jsonResult");
+      const jsonOutput = document.getElementById("jsonOutput");
+
+      const productDetails = {};
+      const selectedProducts = new Set();
+
+      const defaultProductSchema = {
+        "Salud": { tipoCotizacion: "", maternidad: false, enfermedadesGraves: false, fechaNacimientoConyuge: "", cantidadHijos: "", dependientes: [] },
+        "Cobertura médica robusta mundial": { tipoCotizacion: "", maternidad: false, enfermedadesGraves: false, fechaNacimientoConyuge: "", cantidadHijos: "", dependientes: [] },
+        "Bienes": { tipoBien: "", sumaAsegurada: "" },
+        "Vida": { fumador: "", moneda: "" },
+        "Viajes": { destino: "", fechaSalida: "", fechaRetorno: "", cantidadPersonas: "", motivoViaje: "" },
+        "Vehículos": { marca: "", linea: "", modeloAnio: "", valorMercado: "", uso: "" },
+        "Accidentes en el trabajo": { tipoTrabajo: "", diasCobertura: "", ubicacionCobertura: "" }
+      };
 
       function showStep(step) {
         [step1, step3].forEach((el) => el.classList.remove("active"));
@@ -264,13 +287,13 @@
             <div class="field">
               <label>¿Tienes interés en alguno de los siguientes beneficios?</label>
               <div class="checks">
-                <label><input type="checkbox" /> Maternidad</label>
-                <label><input type="checkbox" /> Enfermedades graves</label>
+                <label><input type="checkbox" name="maternidad" /> Maternidad</label>
+                <label><input type="checkbox" name="enfermedadesGraves" /> Enfermedades graves</label>
               </div>
             </div>
             <div data-family-extra style="display:none">
-              <div class="field"><label>Fecha de nacimiento del cónyuge</label><input type="date" /></div>
-              <div class="field"><label>Cantidad de Hijos</label><input type="number" min="0" max="10" /></div>
+              <div class="field"><label>Fecha de nacimiento del cónyuge</label><input name="fechaNacimientoConyuge" type="date" /></div>
+              <div class="field"><label>Cantidad de Hijos</label><input name="cantidadHijos" type="number" min="0" max="10" /></div>
               <div class="field">
                 <label>Dependientes (edad, máximo 5)</label>
                 <div class="inline-row">
@@ -289,42 +312,55 @@
         "Cobertura médica robusta mundial": familyTemplate("Cobertura médica robusta mundial"),
         "Bienes": `
           <form class="modal-grid" data-modal-form>
-            <div class="field"><label>¿Qué tipo de bien desea asegurar?</label><input type="text" /></div>
-            <div class="field"><label>¿Suma asegurada?</label><input type="number" /></div>
+            <div class="field"><label>¿Qué tipo de bien desea asegurar?</label><input name="tipoBien" type="text" /></div>
+            <div class="field"><label>¿Suma asegurada?</label><input name="sumaAsegurada" type="number" /></div>
             <div><button type="submit" class="pill-btn">Aceptar</button></div>
           </form>`,
         "Vida": `
           <form class="modal-grid" data-modal-form>
-            <div class="field"><label>¿Es fumador?</label><select><option>No</option><option>Sí</option></select></div>
-            <div class="field"><label>¿En qué moneda desea su seguro de vida?</label><select><option>Dólares</option><option>Quetzales</option></select></div>
+            <div class="field"><label>¿Es fumador?</label><select name="fumador"><option value="No">No</option><option value="Sí">Sí</option></select></div>
+            <div class="field"><label>¿En qué moneda desea su seguro de vida?</label><select name="moneda"><option value="Dólares">Dólares</option><option value="Quetzales">Quetzales</option></select></div>
             <div><button type="submit" class="pill-btn">Aceptar</button></div>
           </form>`,
         "Viajes": `
           <form class="modal-grid" data-modal-form>
-            <div class="field"><label>¿A qué destino se dirige?</label><input type="text" /></div>
-            <div class="field"><label>Fecha de salida</label><input type="date" /></div>
-            <div class="field"><label>Fecha de retorno</label><input type="date" /></div>
-            <div class="field"><label>Cantidad de personas</label><input type="number" min="1" /></div>
-            <div class="field"><label>Motivo del viaje</label><input type="text" /></div>
+            <div class="field"><label>¿A qué destino se dirige?</label><input name="destino" type="text" /></div>
+            <div class="field"><label>Fecha de salida</label><input name="fechaSalida" type="date" /></div>
+            <div class="field"><label>Fecha de retorno</label><input name="fechaRetorno" type="date" /></div>
+            <div class="field"><label>Cantidad de personas</label><input name="cantidadPersonas" type="number" min="1" /></div>
+            <div class="field"><label>Motivo del viaje</label><input name="motivoViaje" type="text" /></div>
             <div><button type="submit" class="pill-btn">Aceptar</button></div>
           </form>`,
         "Vehículos": `
           <form class="modal-grid" data-modal-form>
-            <div class="field"><label>Marca del vehículo</label><input type="text" /></div>
-            <div class="field"><label>Línea del vehículo</label><input type="text" /></div>
-            <div class="field"><label>Modelo/año</label><input type="text" /></div>
-            <div class="field"><label>Valor del mercado</label><input type="number" /></div>
-            <div class="field"><label>Uso del vehículo</label><select><option>Personal</option><option>Comercial</option></select></div>
+            <div class="field"><label>Marca del vehículo</label><input name="marca" type="text" /></div>
+            <div class="field"><label>Línea del vehículo</label><input name="linea" type="text" /></div>
+            <div class="field"><label>Modelo/año</label><input name="modeloAnio" type="text" /></div>
+            <div class="field"><label>Valor del mercado</label><input name="valorMercado" type="number" /></div>
+            <div class="field"><label>Uso del vehículo</label><select name="uso"><option value="Personal">Personal</option><option value="Comercial">Comercial</option></select></div>
             <div><button type="submit" class="pill-btn">Aceptar</button></div>
           </form>`,
         "Accidentes en el trabajo": `
           <form class="modal-grid" data-modal-form>
-            <div class="field"><label>Tipo de trabajo a realizar</label><input type="text" /></div>
-            <div class="field"><label>Cantidad de días de cobertura</label><input type="number" min="1" /></div>
-            <div class="field"><label>Ubicación de la cobertura</label><select><option>Ciudad</option><option>Interior</option></select></div>
+            <div class="field"><label>Tipo de trabajo a realizar</label><input name="tipoTrabajo" type="text" /></div>
+            <div class="field"><label>Cantidad de días de cobertura</label><input name="diasCobertura" type="number" min="1" /></div>
+            <div class="field"><label>Ubicación de la cobertura</label><select name="ubicacionCobertura"><option value="Ciudad">Ciudad</option><option value="Interior">Interior</option></select></div>
             <div><button type="submit" class="pill-btn">Aceptar</button></div>
           </form>`
       };
+
+      function extractModalData(modalForm) {
+        const data = {};
+        modalForm.querySelectorAll("input, select, textarea").forEach((el) => {
+          if (el.type === "checkbox") {
+            data[el.name] = el.checked;
+          } else if (el.name) {
+            data[el.name] = el.value;
+          }
+        });
+        data.dependientes = Array.from(modalForm.querySelectorAll('input[name="dependienteEdad[]"]')).map((i) => i.value).filter(Boolean);
+        return data;
+      }
 
       function openProductModal(product) {
         modalTitleText.textContent = product;
@@ -345,14 +381,14 @@
 
         if (addDependentBtn && dependentList) {
           addDependentBtn.addEventListener("click", () => {
-            const count = dependentList.querySelectorAll("input").length;
+            const count = dependentList.querySelectorAll('input[name="dependienteEdad[]"]').length;
             if (count >= 5) {
               alert("Solo se permiten hasta 5 dependientes.");
               return;
             }
             const row = document.createElement("div");
             row.className = "field";
-            row.innerHTML = `<label>Edad dependiente ${count + 1}</label><input type="number" min="0" max="120" placeholder="Edad" />`;
+            row.innerHTML = `<label>Edad dependiente ${count + 1}</label><input name="dependienteEdad[]" type="number" min="0" max="120" placeholder="Edad" />`;
             dependentList.appendChild(row);
           });
         }
@@ -361,6 +397,9 @@
         if (modalForm) {
           modalForm.addEventListener("submit", (e) => {
             e.preventDefault();
+            selectedProducts.add(product);
+            productDetails[product] = extractModalData(modalForm);
+            document.querySelector(`[data-product="${product}"]`)?.classList.add("selected");
             closeModal();
             alert(`Información de ${product} guardada.`);
           });
@@ -371,6 +410,46 @@
         modalBackdrop.classList.remove("open");
         modalBackdrop.setAttribute("aria-hidden", "true");
         modalBody.innerHTML = "";
+      }
+
+      function getGeneralData() {
+        return {
+          tipoDocumento: document.getElementById("documento")?.value || "",
+          numeroDocumento: document.getElementById("numeroDocumento")?.value || "",
+          primerNombre: document.getElementById("primerNombre")?.value || "",
+          segundoNombre: document.getElementById("segundoNombre")?.value || "",
+          primerApellido: document.getElementById("primerApellido")?.value || "",
+          segundoApellido: document.getElementById("segundoApellido")?.value || "",
+          fechaNacimiento: document.getElementById("fechaNacimiento")?.value || "",
+          genero: document.querySelector('input[name="genero"]:checked')?.value || "",
+          ocupacion: document.getElementById("ocupacion")?.value || "",
+          departamento: document.getElementById("departamento")?.value || "",
+          municipio: document.getElementById("municipio")?.value || "",
+          zona: document.getElementById("zona")?.value || "",
+          telefono: document.getElementById("telefono")?.value || "",
+          correo: document.getElementById("correo")?.value || ""
+        };
+      }
+
+      function buildFinalJson() {
+        const seguros = {};
+        Object.keys(defaultProductSchema).forEach((product) => {
+          seguros[product] = {
+            seleccionado: selectedProducts.has(product),
+            detalle: { ...defaultProductSchema[product], ...(productDetails[product] || {}) }
+          };
+        });
+
+        return {
+          cotizacion: {
+            datosFormulario: getGeneralData(),
+            segurosDeseados: seguros,
+            meta: {
+              fechaGeneracion: new Date().toISOString(),
+              cantidadSegurosSeleccionados: Array.from(selectedProducts).length
+            }
+          }
+        };
       }
 
       form.addEventListener("submit", (event) => {
@@ -385,7 +464,10 @@
       });
 
       document.getElementById("finishBtn").addEventListener("click", () => {
-        alert("¡Gracias! Hemos recibido tu interés de cotización.");
+        const payload = buildFinalJson();
+        jsonOutput.textContent = JSON.stringify(payload, null, 2);
+        jsonResult.style.display = "block";
+        jsonResult.scrollIntoView({ behavior: "smooth", block: "start" });
       });
 
       document.getElementById("modalClose").addEventListener("click", closeModal);
@@ -393,5 +475,6 @@
         if (e.target === modalBackdrop) closeModal();
       });
     </script>
+
   </body>
 </html>

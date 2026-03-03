@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cotizador de Seguro | Grupo Tecniseguros</title>
+    <style>
+      :root {
+        --bg: #eef2f8;
+        --card: #ffffff;
+        --text: #10253f;
+        --muted: #4d6078;
+        --brand: #1f2f78;
+        --brand-soft: #e9eeff;
+        --border: #cfd9e6;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: linear-gradient(180deg, #eef2f8 0%, #e4e9f1 100%);
+        color: var(--text);
+      }
+      .container { max-width: 1150px; margin: 1.5rem auto; padding: 0 1rem; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(8, 24, 46, 0.08);
+      }
+      .brand { display: flex; justify-content: center; margin-bottom: 1rem; }
+      .brand img { max-width: 100%; width: 360px; height: auto; }
+      .description { margin: 0 0 1rem; color: var(--muted); }
+
+      .section {
+        background: #f8fbff;
+        border: 1px solid #e5edf8;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      .section h2 { margin: 0 0 0.8rem; font-size: 1.12rem; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(200px, 1fr)); gap: 0.9rem 1rem; }
+      .field { display: flex; flex-direction: column; gap: 0.4rem; }
+      label { font-weight: 700; font-size: 0.95rem; }
+      input, select {
+        width: 100%; padding: 0.75rem 0.8rem; border: 1px solid var(--border); border-radius: 10px;
+        font-size: 0.98rem; color: var(--text); background: #fff;
+      }
+      input:focus, select:focus { outline: none; border-color: #0f62fe; box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.14); }
+      .radio-group { display: flex; gap: 1rem; flex-wrap: wrap; min-height: 44px; align-items: center; }
+      .radio-group label { font-weight: 600; display: flex; gap: 0.4rem; align-items: center; }
+
+      .actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
+      .btn {
+        border: none; border-radius: 999px; padding: 0.75rem 1.4rem; font-weight: 700; cursor: pointer;
+      }
+      .btn-primary { background: var(--brand); color: #fff; }
+      .btn-secondary { background: transparent; color: var(--brand); border: 2px solid var(--brand); }
+
+      .step { display: none; }
+      .step.active { display: block; }
+
+      .question { font-size: 1.4rem; font-weight: 700; margin: 1rem 0 1.2rem; }
+      .question small { font-size: 0.95rem; color: var(--muted); font-weight: 500; margin-left: 0.6rem; }
+
+      .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+      .option-card {
+        min-height: 220px;
+        border: 2px solid var(--brand);
+        border-radius: 22px;
+        background: #fff;
+        color: var(--brand);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.7rem;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+      .option-card:hover { transform: translateY(-2px); background: var(--brand-soft); }
+      .icon {
+        width: 88px; height: 88px; border: 3px solid var(--brand); border-radius: 18px;
+        display: flex; align-items: center; justify-content: center; font-size: 2.1rem; font-weight: 700;
+      }
+      .footer-actions { display: flex; justify-content: space-between; margin-top: 1.2rem; }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 20, 40, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 50;
+      }
+      .modal-backdrop.open { display: flex; }
+      .modal {
+        width: 100%;
+        max-width: 720px;
+        max-height: 88vh;
+        overflow: auto;
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 18px 44px rgba(9, 24, 44, 0.35);
+        padding: 1.2rem 1.2rem 1rem;
+      }
+      .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+      .modal-title { margin: 0; font-size: 1.9rem; font-weight: 800; }
+      .modal-title span { color: var(--brand); }
+      .modal-close {
+        border: none; background: transparent; font-size: 2rem; cursor: pointer; color: #40526d; line-height: 1;
+      }
+      .modal-body { margin-top: 0.8rem; }
+      .modal-grid { display: grid; gap: 0.8rem; }
+      .helper { font-size: 0.88rem; color: var(--muted); margin: 0.2rem 0 0.4rem; }
+      .checks { display: grid; gap: 0.35rem; margin: 0.4rem 0; }
+      .checks label { font-weight: 500; }
+      .inline-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; align-items: end; }
+      .dependent-list { display: grid; gap: 0.45rem; }
+      .pill-btn { border-radius: 999px; border: none; background: var(--brand); color: #fff; padding: 0.65rem 1rem; font-weight: 700; cursor: pointer; }
+      .note { font-size: 0.83rem; color: #6b7c93; }
+
+      footer {
+        margin-top: 1.3rem; font-size: 0.9rem; color: var(--muted); line-height: 1.55;
+        border-top: 1px solid #e6ecf5; padding-top: 1rem;
+      }
+
+      @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(190px, 1fr)); } }
+      @media (max-width: 620px) {
+        .card { padding: 1rem; }
+        .grid { grid-template-columns: 1fr; }
+        .question { font-size: 1.1rem; }
+        .modal-title { font-size: 1.4rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <div class="brand">
+          <img
+            src="https://cdn.mcauto-images-production.sendgrid.net/18166728954b7171/2f32c1d4-0e2f-47c2-b537-74566b1625b5/1755x384.png"
+            alt="Logo Grupo Tecniseguros"
+          />
+        </div>
+
+        <div id="step1" class="step active">
+          <p class="description">Completa el siguiente formulario para iniciar tu cotización de seguro.</p>
+          <form id="cotizadorForm">
+            <div class="section">
+              <h2>Información personal</h2>
+              <div class="grid">
+                <div class="field"><label for="documento">Tipo de Documento</label><select id="documento" name="documento"><option value="" selected disabled>Selecciona una opción</option><option value="dpi">DPI</option><option value="pasaporte">Pasaporte</option></select></div>
+                <div class="field"><label for="numeroDocumento">Número de Documento</label><input id="numeroDocumento" name="numeroDocumento" type="text" placeholder="Ingresa tu número" /></div>
+                <div class="field"><label for="primerNombre">Primer Nombre</label><input id="primerNombre" name="primerNombre" type="text" placeholder="Primer Nombre" /></div>
+                <div class="field"><label for="segundoNombre">Segundo Nombre</label><input id="segundoNombre" name="segundoNombre" type="text" placeholder="Segundo Nombre" /></div>
+                <div class="field"><label for="primerApellido">Primer Apellido</label><input id="primerApellido" name="primerApellido" type="text" placeholder="Primer Apellido" /></div>
+                <div class="field"><label for="segundoApellido">Segundo Apellido</label><input id="segundoApellido" name="segundoApellido" type="text" placeholder="Segundo Apellido" /></div>
+                <div class="field"><label for="fechaNacimiento">Fecha de Nacimiento</label><input id="fechaNacimiento" name="fechaNacimiento" type="date" /></div>
+                <div class="field"><label>Género</label><div class="radio-group"><label><input type="radio" name="genero" value="masculino" /> Masculino</label><label><input type="radio" name="genero" value="femenino" /> Femenino</label></div></div>
+                <div class="field"><label for="ocupacion">Ocupación</label><input id="ocupacion" name="ocupacion" type="text" placeholder="Ocupación" /></div>
+              </div>
+            </div>
+            <div class="section">
+              <h2>Información de vivienda</h2>
+              <div class="grid">
+                <div class="field"><label for="departamento">Departamento</label><input id="departamento" name="departamento" type="text" placeholder="Departamento" /></div>
+                <div class="field"><label for="municipio">Municipio</label><input id="municipio" name="municipio" type="text" placeholder="Municipio" /></div>
+                <div class="field"><label for="zona">Zona</label><input id="zona" name="zona" type="text" placeholder="Zona" /></div>
+              </div>
+            </div>
+            <div class="section">
+              <h2>Información de contacto</h2>
+              <div class="grid">
+                <div class="field"><label for="telefono">Teléfono</label><input id="telefono" name="telefono" type="tel" placeholder="Teléfono" /></div>
+                <div class="field"><label for="correo">Correo Electrónico</label><input id="correo" name="correo" type="email" placeholder="Correo Electrónico" /></div>
+              </div>
+            </div>
+            <div class="actions"><button type="submit" class="btn btn-primary">Continuar</button></div>
+          </form>
+        </div>
+
+        <div id="step3" class="step">
+          <p class="question">2. ¿En qué opciones de seguros está interesado?<small>(puede abrir una cotización por producto)</small></p>
+          <h2 style="margin-top:0">Individual/Familiar</h2>
+          <div class="cards-grid">
+            <button type="button" class="option-card" data-product="Salud"><div class="icon">🩺</div><span>Salud</span></button>
+            <button type="button" class="option-card" data-product="Bienes"><div class="icon">🏠</div><span>Bienes</span></button>
+            <button type="button" class="option-card" data-product="Cobertura médica robusta mundial"><div class="icon">🌎</div><span>Cobertura médica robusta mundial</span></button>
+            <button type="button" class="option-card" data-product="Vida"><div class="icon">❤️</div><span>Vida</span></button>
+            <button type="button" class="option-card" data-product="Viajes"><div class="icon">🧳</div><span>Viajes</span></button>
+            <button type="button" class="option-card" data-product="Vehículos"><div class="icon">🚗</div><span>Vehículos</span></button>
+            <button type="button" class="option-card" data-product="Accidentes en el trabajo"><div class="icon">🦶</div><span>Accidentes en el trabajo</span></button>
+          </div>
+          <div class="footer-actions">
+            <button type="button" class="btn btn-secondary" id="backToForm">Anterior</button>
+            <button type="button" class="btn btn-primary" id="finishBtn">Finalizar</button>
+          </div>
+        </div>
+
+        <footer>
+          <p><strong>Todos los derechos reservados® Grupo Tecniseguros 2026</strong></p>
+          <p>Los datos personales y contenido de este formulario han sido facilitados por usted y su consentimiento por lo que son estrictamente confidenciales, secretos y restringidos. Esta información será utilizada para el uso interno y mejora de la asesoría de Grupo Tecniseguros.</p>
+        </footer>
+      </section>
+    </main>
+
+    <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-head">
+          <h3 id="modalTitle" class="modal-title">Producto de Interés: <span>-</span></h3>
+          <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar">×</button>
+        </div>
+        <div id="modalBody" class="modal-body"></div>
+      </div>
+    </div>
+
+    <script>
+      const step1 = document.getElementById("step1");
+      const step3 = document.getElementById("step3");
+      const form = document.getElementById("cotizadorForm");
+      const modalBackdrop = document.getElementById("modalBackdrop");
+      const modalBody = document.getElementById("modalBody");
+      const modalTitleText = document.querySelector("#modalTitle span");
+
+      function showStep(step) {
+        [step1, step3].forEach((el) => el.classList.remove("active"));
+        step.classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function familyTemplate(product) {
+        return `
+          <form class="modal-grid" data-modal-form>
+            <div class="field">
+              <label>Tipo de cotización</label>
+              <select name="tipoCotizacion" data-family-toggle>
+                <option value="individual">Individual</option>
+                <option value="familiar">Familiar</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>¿Tienes interés en alguno de los siguientes beneficios?</label>
+              <div class="checks">
+                <label><input type="checkbox" /> Maternidad</label>
+                <label><input type="checkbox" /> Enfermedades graves</label>
+              </div>
+            </div>
+            <div data-family-extra style="display:none">
+              <div class="field"><label>Fecha de nacimiento del cónyuge</label><input type="date" /></div>
+              <div class="field"><label>Cantidad de Hijos</label><input type="number" min="0" max="10" /></div>
+              <div class="field">
+                <label>Dependientes (edad, máximo 5)</label>
+                <div class="inline-row">
+                  <div class="dependent-list" data-dependent-list></div>
+                  <button type="button" class="pill-btn" data-add-dependent>+ agregar</button>
+                </div>
+                <p class="note">Para ${product} familiar puedes registrar hasta 5 dependientes.</p>
+              </div>
+            </div>
+            <div><button type="submit" class="pill-btn">Aceptar</button></div>
+          </form>`;
+      }
+
+      const productTemplates = {
+        "Salud": familyTemplate("Salud"),
+        "Cobertura médica robusta mundial": familyTemplate("Cobertura médica robusta mundial"),
+        "Bienes": `
+          <form class="modal-grid" data-modal-form>
+            <div class="field"><label>¿Qué tipo de bien desea asegurar?</label><input type="text" /></div>
+            <div class="field"><label>¿Suma asegurada?</label><input type="number" /></div>
+            <div><button type="submit" class="pill-btn">Aceptar</button></div>
+          </form>`,
+        "Vida": `
+          <form class="modal-grid" data-modal-form>
+            <div class="field"><label>¿Es fumador?</label><select><option>No</option><option>Sí</option></select></div>
+            <div class="field"><label>¿En qué moneda desea su seguro de vida?</label><select><option>Dólares</option><option>Quetzales</option></select></div>
+            <div><button type="submit" class="pill-btn">Aceptar</button></div>
+          </form>`,
+        "Viajes": `
+          <form class="modal-grid" data-modal-form>
+            <div class="field"><label>¿A qué destino se dirige?</label><input type="text" /></div>
+            <div class="field"><label>Fecha de salida</label><input type="date" /></div>
+            <div class="field"><label>Fecha de retorno</label><input type="date" /></div>
+            <div class="field"><label>Cantidad de personas</label><input type="number" min="1" /></div>
+            <div class="field"><label>Motivo del viaje</label><input type="text" /></div>
+            <div><button type="submit" class="pill-btn">Aceptar</button></div>
+          </form>`,
+        "Vehículos": `
+          <form class="modal-grid" data-modal-form>
+            <div class="field"><label>Marca del vehículo</label><input type="text" /></div>
+            <div class="field"><label>Línea del vehículo</label><input type="text" /></div>
+            <div class="field"><label>Modelo/año</label><input type="text" /></div>
+            <div class="field"><label>Valor del mercado</label><input type="number" /></div>
+            <div class="field"><label>Uso del vehículo</label><select><option>Personal</option><option>Comercial</option></select></div>
+            <div><button type="submit" class="pill-btn">Aceptar</button></div>
+          </form>`,
+        "Accidentes en el trabajo": `
+          <form class="modal-grid" data-modal-form>
+            <div class="field"><label>Tipo de trabajo a realizar</label><input type="text" /></div>
+            <div class="field"><label>Cantidad de días de cobertura</label><input type="number" min="1" /></div>
+            <div class="field"><label>Ubicación de la cobertura</label><select><option>Ciudad</option><option>Interior</option></select></div>
+            <div><button type="submit" class="pill-btn">Aceptar</button></div>
+          </form>`
+      };
+
+      function openProductModal(product) {
+        modalTitleText.textContent = product;
+        modalBody.innerHTML = productTemplates[product] || "<p>Sin formulario configurado para este producto.</p>";
+        modalBackdrop.classList.add("open");
+        modalBackdrop.setAttribute("aria-hidden", "false");
+
+        const familyToggle = modalBody.querySelector("[data-family-toggle]");
+        const familyExtra = modalBody.querySelector("[data-family-extra]");
+        const addDependentBtn = modalBody.querySelector("[data-add-dependent]");
+        const dependentList = modalBody.querySelector("[data-dependent-list]");
+
+        if (familyToggle && familyExtra) {
+          familyToggle.addEventListener("change", () => {
+            familyExtra.style.display = familyToggle.value === "familiar" ? "block" : "none";
+          });
+        }
+
+        if (addDependentBtn && dependentList) {
+          addDependentBtn.addEventListener("click", () => {
+            const count = dependentList.querySelectorAll("input").length;
+            if (count >= 5) {
+              alert("Solo se permiten hasta 5 dependientes.");
+              return;
+            }
+            const row = document.createElement("div");
+            row.className = "field";
+            row.innerHTML = `<label>Edad dependiente ${count + 1}</label><input type="number" min="0" max="120" placeholder="Edad" />`;
+            dependentList.appendChild(row);
+          });
+        }
+
+        const modalForm = modalBody.querySelector("[data-modal-form]");
+        if (modalForm) {
+          modalForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            closeModal();
+            alert(`Información de ${product} guardada.`);
+          });
+        }
+      }
+
+      function closeModal() {
+        modalBackdrop.classList.remove("open");
+        modalBackdrop.setAttribute("aria-hidden", "true");
+        modalBody.innerHTML = "";
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        showStep(step3);
+      });
+
+      document.getElementById("backToForm").addEventListener("click", () => showStep(step1));
+
+      document.querySelectorAll("#step3 .option-card").forEach((card) => {
+        card.addEventListener("click", () => openProductModal(card.dataset.product));
+      });
+
+      document.getElementById("finishBtn").addEventListener("click", () => {
+        alert("¡Gracias! Hemos recibido tu interés de cotización.");
+      });
+
+      document.getElementById("modalClose").addEventListener("click", closeModal);
+      modalBackdrop.addEventListener("click", (e) => {
+        if (e.target === modalBackdrop) closeModal();
+      });
+    </script>
+  </body>
+</html>

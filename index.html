@@ -44,7 +44,6 @@
       .grid { display: grid; grid-template-columns: repeat(3, minmax(200px, 1fr)); gap: 0.9rem 1rem; }
       .field { display: flex; flex-direction: column; gap: 0.4rem; }
       label { font-weight: 700; font-size: 0.95rem; }
-      .required { color: #d12f2f; margin-left: 0.2rem; }
       input, select {
         width: 100%; padding: 0.75rem 0.8rem; border: 1px solid var(--border); border-radius: 10px;
         font-size: 0.98rem; color: var(--text); background: #fff;
@@ -129,23 +128,22 @@
               <h2>Información personal</h2>
               <div class="grid">
                 <div class="field">
-                  <label for="documento">Tipo de Documento<span class="required">*</span></label>
-                  <select id="documento" name="documento" required aria-describedby="ayudaDocumento">
+                  <label for="documento">Tipo de Documento</label>
+                  <select id="documento" name="documento">
                     <option value="" selected disabled>Selecciona una opción</option>
                     <option value="dpi">DPI</option>
                     <option value="pasaporte">Pasaporte</option>
                   </select>
-                  <small id="ayudaDocumento" style="color: var(--muted)">Si seleccionas DPI, debe tener 13 dígitos numéricos.</small>
                 </div>
 
                 <div class="field">
-                  <label for="numeroDocumento">Número de Documento<span class="required">*</span></label>
-                  <input id="numeroDocumento" name="numeroDocumento" type="text" placeholder="Ingresa tu número" inputmode="numeric" required minlength="13" maxlength="13" pattern="\d{13}" title="El DPI debe contener exactamente 13 dígitos numéricos." />
+                  <label for="numeroDocumento">Número de Documento</label>
+                  <input id="numeroDocumento" name="numeroDocumento" type="text" placeholder="Ingresa tu número" inputmode="numeric" />
                 </div>
 
                 <div class="field">
-                  <label for="primerNombre">Primer Nombre<span class="required">*</span></label>
-                  <input id="primerNombre" name="primerNombre" type="text" placeholder="Primer Nombre" required />
+                  <label for="primerNombre">Primer Nombre</label>
+                  <input id="primerNombre" name="primerNombre" type="text" placeholder="Primer Nombre" />
                 </div>
 
                 <div class="field">
@@ -154,31 +152,31 @@
                 </div>
 
                 <div class="field">
-                  <label for="primerApellido">Primer Apellido<span class="required">*</span></label>
-                  <input id="primerApellido" name="primerApellido" type="text" placeholder="Primer Apellido" required />
+                  <label for="primerApellido">Primer Apellido</label>
+                  <input id="primerApellido" name="primerApellido" type="text" placeholder="Primer Apellido" />
                 </div>
 
                 <div class="field">
-                  <label for="segundoApellido">Segundo Apellido<span class="required">*</span></label>
-                  <input id="segundoApellido" name="segundoApellido" type="text" placeholder="Segundo Apellido" required />
+                  <label for="segundoApellido">Segundo Apellido</label>
+                  <input id="segundoApellido" name="segundoApellido" type="text" placeholder="Segundo Apellido" />
                 </div>
 
                 <div class="field">
-                  <label for="fechaNacimiento">Fecha de Nacimiento<span class="required">*</span></label>
-                  <input id="fechaNacimiento" name="fechaNacimiento" type="date" required />
+                  <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                  <input id="fechaNacimiento" name="fechaNacimiento" type="date" />
                 </div>
 
                 <div class="field">
-                  <label>Género<span class="required">*</span></label>
+                  <label>Género</label>
                   <div class="radio-group">
-                    <label><input type="radio" name="genero" value="masculino" required /> Masculino</label>
-                    <label><input type="radio" name="genero" value="femenino" required /> Femenino</label>
+                    <label><input type="radio" name="genero" value="masculino" /> Masculino</label>
+                    <label><input type="radio" name="genero" value="femenino" /> Femenino</label>
                   </div>
                 </div>
 
                 <div class="field">
-                  <label for="ocupacion">Ocupación<span class="required">*</span></label>
-                  <input id="ocupacion" name="ocupacion" type="text" placeholder="Ocupación" required />
+                  <label for="ocupacion">Ocupación</label>
+                  <input id="ocupacion" name="ocupacion" type="text" placeholder="Ocupación" />
                 </div>
               </div>
             </div>
@@ -187,16 +185,16 @@
               <h2>Información de vivienda</h2>
               <div class="grid">
                 <div class="field">
-                  <label for="departamento">Departamento<span class="required">*</span></label>
-                  <input id="departamento" name="departamento" type="text" placeholder="Departamento" required />
+                  <label for="departamento">Departamento</label>
+                  <input id="departamento" name="departamento" type="text" placeholder="Departamento" />
                 </div>
                 <div class="field">
-                  <label for="municipio">Municipio<span class="required">*</span></label>
-                  <input id="municipio" name="municipio" type="text" placeholder="Municipio" required />
+                  <label for="municipio">Municipio</label>
+                  <input id="municipio" name="municipio" type="text" placeholder="Municipio" />
                 </div>
                 <div class="field">
-                  <label for="zona">Zona<span class="required">*</span></label>
-                  <input id="zona" name="zona" type="text" placeholder="Zona" required />
+                  <label for="zona">Zona</label>
+                  <input id="zona" name="zona" type="text" placeholder="Zona" />
                 </div>
               </div>
             </div>
@@ -205,12 +203,12 @@
               <h2>Información de contacto</h2>
               <div class="grid">
                 <div class="field">
-                  <label for="telefono">Teléfono<span class="required">*</span></label>
-                  <input id="telefono" name="telefono" type="tel" placeholder="Teléfono" inputmode="numeric" required minlength="8" maxlength="8" pattern="\d{8}" title="El teléfono debe contener exactamente 8 dígitos numéricos." />
+                  <label for="telefono">Teléfono</label>
+                  <input id="telefono" name="telefono" type="tel" placeholder="Teléfono" inputmode="numeric" />
                 </div>
                 <div class="field">
-                  <label for="correo">Correo Electrónico<span class="required">*</span></label>
-                  <input id="correo" name="correo" type="email" placeholder="Correo Electrónico" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" title="Ingresa un correo electrónico válido. Ejemplo: nombre@dominio.com" />
+                  <label for="correo">Correo Electrónico</label>
+                  <input id="correo" name="correo" type="email" placeholder="Correo Electrónico" />
                 </div>
               </div>
             </div>
@@ -221,21 +219,8 @@
           </form>
         </div>
 
-        <div id="step2" class="step">
-          <p class="question">2. ¿En qué tipo de seguro estás interesado?</p>
-          <div class="cards-grid">
-            <button class="option-card" data-type="individual-familiar" type="button">
-              <div class="icon">👤</div>
-              <strong>Individual/Familiar</strong>
-            </button>
-          </div>
-          <div class="footer-actions">
-            <button type="button" class="btn btn-secondary" id="backToForm">Anterior</button>
-          </div>
-        </div>
-
         <div id="step3" class="step">
-          <p class="question">3. ¿En qué opciones de seguros está interesado?<small>(por favor elija al menos una opción)</small></p>
+          <p class="question">2. ¿En qué opciones de seguros está interesado?<small>(por favor elija al menos una opción)</small></p>
           <h2 style="margin-top:0">Individual/Familiar</h2>
           <div class="cards-grid">
             <button type="button" class="option-card" data-product="Salud"><div class="icon">🩺</div><span>Salud</span></button>
@@ -247,7 +232,7 @@
             <button type="button" class="option-card" data-product="Accidentes en el trabajo"><div class="icon">🦶</div><span>Accidentes en el trabajo</span></button>
           </div>
           <div class="footer-actions">
-            <button type="button" class="btn btn-secondary" id="backToStep2">Anterior</button>
+            <button type="button" class="btn btn-secondary" id="backToForm">Anterior</button>
             <button type="button" class="btn btn-primary" id="finishBtn">Finalizar</button>
           </div>
         </div>
@@ -261,66 +246,29 @@
 
     <script>
       const step1 = document.getElementById("step1");
-      const step2 = document.getElementById("step2");
       const step3 = document.getElementById("step3");
       const form = document.getElementById("cotizadorForm");
-      const tipoDocumento = document.getElementById("documento");
-      const numeroDocumento = document.getElementById("numeroDocumento");
 
       function showStep(step) {
-        [step1, step2, step3].forEach((el) => el.classList.remove("active"));
+        [step1, step3].forEach((el) => el.classList.remove("active"));
         step.classList.add("active");
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-
-      function actualizarValidacionDocumento() {
-        if (!tipoDocumento || !numeroDocumento) return;
-        if (tipoDocumento.value === "dpi") {
-          numeroDocumento.setAttribute("pattern", "\\d{13}");
-          numeroDocumento.setAttribute("minlength", "13");
-          numeroDocumento.setAttribute("maxlength", "13");
-          numeroDocumento.setAttribute("inputmode", "numeric");
-          numeroDocumento.setAttribute("title", "El DPI debe contener exactamente 13 dígitos numéricos.");
-        } else {
-          numeroDocumento.setAttribute("pattern", "[A-Za-z0-9]{6,20}");
-          numeroDocumento.setAttribute("minlength", "6");
-          numeroDocumento.setAttribute("maxlength", "20");
-          numeroDocumento.setAttribute("inputmode", "text");
-          numeroDocumento.setAttribute("title", "Ingresa un número de documento válido.");
-        }
-      }
-
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-        showStep(step2);
-      });
-
-      document.querySelector('[data-type="individual-familiar"]').addEventListener("click", () => {
         showStep(step3);
       });
 
       document.getElementById("backToForm").addEventListener("click", () => showStep(step1));
-      document.getElementById("backToStep2").addEventListener("click", () => showStep(step2));
 
       document.querySelectorAll("#step3 .option-card").forEach((card) => {
         card.addEventListener("click", () => card.classList.toggle("selected"));
       });
 
       document.getElementById("finishBtn").addEventListener("click", () => {
-        const selected = document.querySelectorAll("#step3 .option-card.selected");
-        if (!selected.length) {
-          alert("Selecciona al menos una opción de seguro para continuar.");
-          return;
-        }
         alert("¡Gracias! Hemos recibido tu interés de cotización.");
       });
 
-      tipoDocumento.addEventListener("change", actualizarValidacionDocumento);
-      actualizarValidacionDocumento();
     </script>
   </body>
 </html>

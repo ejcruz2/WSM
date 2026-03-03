@@ -274,6 +274,7 @@
       const productDetails = {};
       const selectedProducts = new Set();
       const POST_URL = "https://default28c7f1d30d9b4a84bb9871e6b7435e.ca.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/1cb71870c9664f1d8b8d9f6793a590b6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Zzlb3DoCbIBV_h-sxzBG8ZNl_icoK8azO7UTodgj6eA";
+      const FINAL_REDIRECT_URL = "https://tecniseguros.com/";
 
       const defaultProductSchema = {
         "Salud": { tipoCotizacion: "", maternidad: false, enfermedadesGraves: false, fechaNacimientoConyuge: "", cantidadHijos: "", dependientes: [] },
@@ -455,6 +456,10 @@
         setTimeout(() => resultPopup.classList.remove("show"), 9000);
       }
 
+      function redirectToFinalUrl() {
+        window.location.href = FINAL_REDIRECT_URL;
+      }
+
       function buildFinalJson() {
         const seguros = {};
         Object.keys(defaultProductSchema).forEach((product) => {
@@ -509,6 +514,7 @@
           }
 
           showResultPopup("JSON enviado correctamente", parsed || "Solicitud enviada con éxito.");
+          setTimeout(redirectToFinalUrl, 1500);
         } catch (error) {
           showResultPopup("Error de red al enviar JSON", error?.message || "No se pudo conectar al endpoint.");
         }
